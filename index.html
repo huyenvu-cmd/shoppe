@@ -140,23 +140,54 @@
     });
 
     // --- Logic Affiliate (giữ nguyên) ---
+    // --- Logic Affiliate (Đã chỉnh sửa nút điều hướng) ---
     let finalLink = "";
+    
     function convert() {
         let input = document.getElementById("link").value.trim();
-        if (!input) { alert("Vui lòng dán link Shopee!"); return; }
+        if (!input) { 
+            alert("Vui lòng dán link Shopee!"); 
+            return; 
+        }
+
         let aff = "mmp_pid=an_17180360000&utm_source=an_17180360000&utm_medium=affiliates";
         let match = input.match(/i\.(\d+)\.(\d+)/);
-        if (match) { finalLink = `https://shopee.vn/product/${match[1]}/${match[2]}?${aff}`; } 
-        else { finalLink = input.includes("?") ? `${input}&${aff}` : `${input}?${aff}`; }
+        
+        if (match) { 
+            finalLink = `https://shopee.vn/product/${match[1]}/${match[2]}?${aff}`; 
+        } else { 
+            finalLink = input.includes("?") ? `${input}&${aff}` : `${input}?${aff}`; 
+        }
+
+        // Tự động copy link ngay khi nhấn nút "Tạo link" để tiện cho user
+        navigator.clipboard.writeText(finalLink);
+
+        // Hiển thị kết quả
         document.getElementById("resultContainer").style.display = "block";
         document.getElementById("copyBtn").style.display = "block";
-        document.getElementById("result").innerHTML = `<a href="${finalLink}" target="_blank">👉 Click để đến trang sản phẩm</a>`;
+        
+        // Thay đổi nút bấm: Quay lại Facebook
+        // Link fb://facewebmodal/f mục đích là để mở app Facebook trên điện thoại
+        document.getElementById("result").innerHTML = `
+            <p style="color: #2e7d32; font-size: 13px; margin-bottom: 8px;">✅ Đã tự động sao chép link!</p>
+            <a href="fb://facewebmodal/f" onclick="goToFacebook(event)" style="background: #1877F2; color: white; padding: 10px 15px; border-radius: 8px; display: inline-block; text-decoration: none;">
+                ✈️ Quay lại Facebook để dán link
+            </a>`;
     }
+
+    // Hàm xử lý quay lại Facebook linh hoạt cho cả máy tính và điện thoại
+    function goToFacebook(e) {
+        // Nếu không mở được app bằng fb:// thì sẽ chuyển sang web facebook.com
+        setTimeout(function() {
+            window.location.href = "https://www.facebook.com";
+        }, 500);
+    }
+
     function copyLink() {
         if (!finalLink) return;
         navigator.clipboard.writeText(finalLink);
         let btn = document.getElementById("copyBtn");
-        btn.innerText = "ĐÃ SAO CHÉP!";
+        btn.innerText = "ĐÃ SAO CHÉP LẠI!";
         setTimeout(() => { btn.innerText = "SAO CHÉP LINK"; }, 2000);
     }
 </script>
