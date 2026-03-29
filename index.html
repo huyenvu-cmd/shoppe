@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Săn Mã Shopee - Giá Tốt Mỗi Ngày</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
     <style>
         :root {
             --primary-color: #ee4d2d;
@@ -11,7 +14,7 @@
             --card-bg: #ffffff;
             --text-main: #333;
             --text-sub: #666;
-            --accent: #a5d6a7; /* Màu xanh lá nhạt giống hình mẫu */
+            --accent: #a5d6a7;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,8 +27,12 @@
             align-items: center;
             min-height: 100vh;
             padding: 15px;
+            /* Thay đổi để các phần tử xếp theo chiều dọc */
+            flex-direction: column; 
+            gap: 20px; /* Khoảng cách giữa card và slider */
         }
 
+        /* --- Style cho Card săn mã (giữ nguyên) --- */
         .container {
             background: var(--card-bg);
             width: 100%;
@@ -34,96 +41,52 @@
             border-radius: 24px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             text-align: center;
-            transition: transform 0.3s ease;
         }
 
-        h2 {
-            font-size: 24px;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            color: var(--text-main);
-            text-transform: uppercase;
-        }
+        h2 { font-size: 24px; letter-spacing: 1px; margin-bottom: 10px; color: var(--text-main); text-transform: uppercase; }
+        .subtitle { color: var(--text-sub); font-size: 14px; margin-bottom: 30px; }
+        input { width: 100%; padding: 15px; border: 1.5px solid #eee; border-radius: 12px; outline: none; font-size: 15px; transition: border-color 0.3s; }
+        input:focus { border-color: var(--accent); }
+        .button-stack { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        button { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 16px; }
+        .btn-main { background: var(--text-main); color: white; }
+        .btn-main:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-copy { background: var(--accent); color: #2e4a2e; display: none; }
+        .result-box { margin: 20px 0; padding: 15px; background: #f1f8e9; border-radius: 10px; display: none; border: 1px dashed var(--accent); }
+        .result-box a { color: #2e7d32; text-decoration: none; font-weight: bold; word-break: break-all; }
 
-        .subtitle {
-            color: var(--text-sub);
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        input {
+        /* --- 3. Style cho Swiper Slider --- */
+        .swiper {
             width: 100%;
-            padding: 15px;
-            border: 1.5px solid #eee;
-            border-radius: 12px;
-            outline: none;
-            font-size: 15px;
-            transition: border-color 0.3s;
+            max-width: 450px; /* Bằng chiều rộng với card */
+            height: 250px; /* Chiều cao của slider */
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            overflow: hidden; /* Để bo góc hoạt động */
         }
 
-        input:focus {
-            border-color: var(--accent);
-        }
-
-        .button-stack {
+        .swiper-slide {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            justify-content: center;
+            align-items: center;
         }
 
-        button {
+        .swiper-slide img {
             width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 16px;
+            height: 100%;
+            object-fit: cover; /* Ảnh phủ kín không bị méo */
         }
 
-        .btn-main {
+        /* Tùy chỉnh màu sắc cho chấm điều hướng */
+        .swiper-pagination-bullet-active {
             background: var(--text-main);
-            color: white;
-        }
-
-        .btn-main:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        .btn-copy {
-            background: var(--accent);
-            color: #2e4a2e;
-            display: none; /* Chỉ hiện khi có link */
-        }
-
-        .result-box {
-            margin: 20px 0;
-            padding: 15px;
-            background: #f1f8e9;
-            border-radius: 10px;
-            display: none;
-            border: 1px dashed var(--accent);
-        }
-
-        .result-box a {
-            color: #2e7d32;
-            text-decoration: none;
-            font-weight: bold;
-            word-break: break-all;
         }
 
         /* Responsive cho Mobile */
         @media (max-width: 480px) {
-            .container {
-                padding: 30px 20px;
-            }
+            .container, .swiper { padding: 30px 20px; max-width: 100%; }
             h2 { font-size: 20px; }
+            .swiper { height: 200px; } /* Giảm chiều cao trên mobile */
         }
     </style>
 </head>
@@ -132,52 +95,63 @@
 <div class="container">
     <h2>Candee Affiliate</h2>
     <p class="subtitle">Dán link Shopee để nhận ưu đãi đặc biệt</p>
-
-    <div class="input-group">
-        <input id="link" type="text" placeholder="https://shopee.vn/product/...">
-    </div>
-
-    <div class="result-box" id="resultContainer">
-        <div id="result"></div>
-    </div>
-
+    <input id="link" type="text" placeholder="https://shopee.vn/product/...">
+    <div class="result-box" id="resultContainer"><div id="result"></div></div>
     <div class="button-stack">
         <button class="btn-main" onclick="convert()">TẠO LINK NGAY</button>
         <button id="copyBtn" class="btn-copy" onclick="copyLink()">SAO CHÉP LINK</button>
     </div>
 </div>
 
-<script>
-    let finalLink = "";
+<div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide">
+            <img src="https://i.postimg.cc/mDFdKtWQ/1.jpg=80&w=600&auto=format&fit=crop" alt="Slide 1">
+        </div>
+        <div class="swiper-slide">
+            <img src="https://i.postimg.cc/NjgzLsRt/2.jpg=80&w=600&auto=format&fit=crop" alt="Slide 2">
+        </div>
+        <div class="swiper-slide">
+            <img src="https://i.postimg.cc/K8ZH4Gt2/3.jpg=80&w=600&auto=format&fit=crop" alt="Slide 3">
+        </div>
+    </div>
+    <div class="swiper-pagination"></div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+    // --- 4. Khởi tạo Swiper Slider ---
+    var swiper = new Swiper(".mySwiper", {
+        loop: true, // Vòng lặp vô hạn
+        autoplay: {
+            delay: 3000, // Tự động chuyển sau 3 giây
+            disableOnInteraction: false, // Không dừng khi user chạm vào
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true, // Cho phép click vào chấm để chuyển ảnh
+        },
+        // Hiệu ứng chuyển cảnh mượt mà
+        speed: 800, 
+    });
+
+    // --- Logic Affiliate (giữ nguyên) ---
+    let finalLink = "";
     function convert() {
         let input = document.getElementById("link").value.trim();
-        if (!input) {
-            alert("Vui lòng dán link Shopee!");
-            return;
-        }
-
-        // Logic Affiliate
+        if (!input) { alert("Vui lòng dán link Shopee!"); return; }
         let aff = "mmp_pid=an_17180360000&utm_source=an_17180360000&utm_medium=affiliates";
         let match = input.match(/i\.(\d+)\.(\d+)/);
-
-        if (match) {
-            finalLink = `https://shopee.vn/product/${match[1]}/${match[2]}?${aff}`;
-        } else {
-            finalLink = input.includes("?") ? `${input}&${aff}` : `${input}?${aff}`;
-        }
-
-        // Cập nhật giao diện
+        if (match) { finalLink = `https://shopee.vn/product/${match[1]}/${match[2]}?${aff}`; } 
+        else { finalLink = input.includes("?") ? `${input}&${aff}` : `${input}?${aff}`; }
         document.getElementById("resultContainer").style.display = "block";
         document.getElementById("copyBtn").style.display = "block";
-        document.getElementById("result").innerHTML = 
-            `<a href="${finalLink}" target="_blank">👉 Click để đến trang sản phẩm</a>`;
+        document.getElementById("result").innerHTML = `<a href="${finalLink}" target="_blank">👉 Click để đến trang sản phẩm</a>`;
     }
-
     function copyLink() {
         if (!finalLink) return;
         navigator.clipboard.writeText(finalLink);
-        
         let btn = document.getElementById("copyBtn");
         btn.innerText = "ĐÃ SAO CHÉP!";
         setTimeout(() => { btn.innerText = "SAO CHÉP LINK"; }, 2000);
